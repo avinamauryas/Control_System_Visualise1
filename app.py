@@ -182,7 +182,7 @@ with tab3:
     fig_t3d = go.Figure(
         data=[
             go.Surface(
-                z=Y_GRID, x=t, y=freqs, colorscale="Coolwarm", opacity=0.9
+                z=Y_GRID, x=t, y=freqs, colorscale="Jet", opacity=0.9
             )
         ]
     )
