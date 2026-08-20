@@ -38,19 +38,6 @@ if col2.button("Clear All"):
   st.session_state.poles = []
   st.session_state.zeros = []
     
-'''
-col1, col2 = st.sidebar.columns(2)
-if col1.Button("Add"):
-    val = complex(r_input, im_input)
-    if item_type == "Pole":
-        st.session_state.poles.append(val)
-    else:
-        st.session_state.zeros.append(val)
-
-if col2.Button("Clear All"):
-    st.session_state.poles = []
-    st.session_state.zeros = []
-'''
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Active System Elements")
