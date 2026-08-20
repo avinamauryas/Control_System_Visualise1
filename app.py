@@ -17,7 +17,7 @@ gain_k = st.sidebar.number_input("System Gain (K)", value=1.0, step=0.1)
 
 # Poles & Zeros configuration (using session state to keep track of added items)
 if "poles" not in st.session_state:
-    st.session_state.poles = [-1.0 + 0j, -2.0 + 0j]
+    st.session_state.poles = [-1.0 + 3j, -1.0 - 3j, -2.0 + 0j]
 if "zeros" not in st.session_state:
     st.session_state.zeros = []
 
