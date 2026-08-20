@@ -9,7 +9,7 @@ st.set_page_config(
     page_title="Control Systems Analyzer", layout="wide", page_icon="🎛️"
 )
 
-st.title("🎛️ Advanced Control Systems Analyzer")
+st.title("🚀 Control Systems Visulise")
 
 # --- SIDEBAR: Controls ---
 st.sidebar.header("System Controls")
