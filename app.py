@@ -6,10 +6,10 @@ import streamlit as st
 
 # Set up page layout to wide
 st.set_page_config(
-    page_title="Control Systems Analyzer", layout="wide", page_icon="🎛️"
+    page_title="Control Systems Analyzer", layout="wide", page_icon="🚀"
 )
 
-st.title("🚀 Control Systems Visulise")
+st.title("🚀 Control Systems Visualiser")
 
 # --- SIDEBAR: Controls ---
 st.sidebar.header("System Controls")
