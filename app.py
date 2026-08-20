@@ -166,7 +166,7 @@ with tab2:
 # --- TAB 3: 3D TIME DOMAIN ---
 with tab3:
   input_choice = st.selectbox(
-      "Input Type", ["Step", "Impulse", "Ramp", "Sine"], horizontal=True
+      "Input Type", ["Step", "Impulse", "Ramp", "Sine"]
   )
   t = np.linspace(0, 10, 100)
 
