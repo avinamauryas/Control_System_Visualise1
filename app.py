@@ -16,7 +16,7 @@ st.sidebar.header("System Controls")
 gain_k = st.sidebar.number_input(
     "Gain (K)", value=1.0, step=0.1, key="system_gain_k"
 )
-
+st.sidebar.caption("💡 Recommended range: 0.1 to 50")
 if "poles" not in st.session_state:
   st.session_state.poles = [-1.0 + 0j, -2.0 + 0j]
 if "zeros" not in st.session_state:
@@ -24,7 +24,9 @@ if "zeros" not in st.session_state:
 
 st.sidebar.subheader("Add Pole/Zero")
 r_input = st.sidebar.number_input("Real (sigma)", value=-1.5)
+st.sidebar.caption("💡 Range: -10 to +2 (Keep negative for stability)")
 im_input = st.sidebar.number_input("Imag (omega)", value=0.0)
+st.sidebar.caption("💡 Range: -50 to +50")
 item_type = st.sidebar.radio("Type", ["Pole", "Zero"], horizontal=True)
 
 col_b1, col_b2 = st.sidebar.columns(2)
