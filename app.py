@@ -58,7 +58,6 @@ tab1, tab2, tab3, tab4 = st.tabs([
 z_coeffs = st.session_state.zeros
 p_coeffs = st.session_state.poles
 
-# Force coefficients to be clean real/complex polynomials without tiny imaginary noise
 num_poly = (
     np.real_if_close(np.poly(z_coeffs) * gain_k)
     if len(z_coeffs) > 0
@@ -85,9 +84,13 @@ with tab1:
 
   H_s = num / den
   magnitude = np.real(np.log10(1.0 + np.abs(H_s)))
-  magnitude = np.nan_to_num(magnitude, nan=0.0, posinf=10.0, neginf=0.0)
+  magnitude = np.clip(
+      np.nan_to_num(magnitude, nan=0.0, posinf=10.0, neginf=0.0), 0, 15
+  )
   phase = np.real(np.degrees(np.angle(H_s)))
-  phase = np.nan_to_num(phase, nan=0.0, posinf=180.0, neginf=-180.0)
+  phase = np.clip(
+      np.nan_to_num(phase, nan=0.0, posinf=180.0, neginf=-180.0), -180, 180
+  )
 
   col_l1, col_l2 = st.columns(2)
   with col_l1:
@@ -136,8 +139,16 @@ with tab1:
 with tab2:
   w = np.logspace(-2, 3, 500)
   w, mag, phase = signal.bode(sys, w)
-  mag = np.real(np.nan_to_num(mag, nan=0.0, posinf=100.0, neginf=-100.0))
-  phase = np.real(np.nan_to_num(phase, nan=0.0, posinf=360.0, neginf=-360.0))
+  mag = np.clip(
+      np.real(np.nan_to_num(mag, nan=0.0, posinf=100.0, neginf=-100.0)),
+      -200,
+      200,
+  )
+  phase = np.clip(
+      np.real(np.nan_to_num(phase, nan=0.0, posinf=360.0, neginf=-360.0)),
+      -360,
+      360,
+  )
 
   zero_dB = np.where(np.diff(np.sign(mag)))[0]
   omega_gc = w[zero_dB[0]] if len(zero_dB) > 0 else np.nan
