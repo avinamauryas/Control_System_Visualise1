@@ -283,6 +283,8 @@ with tab3:
   st.plotly_chart(fig_t3d, use_container_width=True)
 
 # --- TAB 4: 2D TIME DOMAIN ---
+
+# --- TAB 4: 2D TIME DOMAIN ---
 with tab4:
   t_2d = np.linspace(0, 10, 200)
   _, y_step = signal.step(sys, T=t_2d)
@@ -299,14 +301,69 @@ with tab4:
   fig_2d = make_subplots(
       rows=2,
       cols=2,
-      subplot_titles=("Step Response", "Impulse Response", "Ramp Response", "Sine Response (w=1)"),
+      subplot_titles=(
+          "Step Response",
+          "Impulse Response",
+          "Ramp Response",
+          "Sine Response (w=1)",
+      ),
   )
 
-  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_step, mode="lines", line=dict(color="tab:blue")), row=1, col=1)
-  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_imp, mode="lines", line=dict(color="tab:orange")), row=1, col=2)
-  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_ramp, mode="lines", line=dict(color="tab:green")), row=2, col=1)
-  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_sine, mode="lines", name="Out", line=dict(color="tab:red")), row=2, col=2)
-  fig_2d.add_trace(go.Scatter(x=t_2d, y=u_sine, mode="lines", name="In", line=dict(color="gray", dash="dash")), row=2, col=2)
+  fig_2d.add_trace(
+      go.Scatter(
+          x=t_2d,
+          y=y_step,
+          mode="lines",
+          line=dict(color="#1f77b4", width=2),
+      ),
+      row=1,
+      col=1,
+  )
+  fig_2d.add_trace(
+      go.Scatter(
+          x=t_2d,
+          y=y_imp,
+          mode="lines",
+          line=dict(color="#ff7f0e", width=2),
+      ),
+      row=1,
+      col=2,
+  )
+  fig_2d.add_trace(
+      go.Scatter(
+          x=t_2d,
+          y=y_ramp,
+          mode="lines",
+          line=dict(color="#2ca02c", width=2),
+      ),
+      row=2,
+      col=1,
+  )
+  fig_2d.add_trace(
+      go.Scatter(
+          x=t_2d,
+          y=y_sine,
+          mode="lines",
+          name="Out",
+          line=dict(color="#d62728", width=2),
+      ),
+      row=2,
+      col=2,
+  )
+  fig_2d.add_trace(
+      go.Scatter(
+          x=t_2d,
+          y=u_sine,
+          mode="lines",
+          name="In",
+          line=dict(color="gray", dash="dash", width=1.5),
+      ),
+      row=2,
+      col=2,
+  )
 
-  fig_2d.update_layout(height=450, margin=dict(l=0, r=0, b=0, t=30), showlegend=False)
+  fig_2d.update_layout(
+      height=450, margin=dict(l=0, r=0, b=0, t=30), showlegend=False
+  )
   st.plotly_chart(fig_2d, use_container_width=True)
+    
