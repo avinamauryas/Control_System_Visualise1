@@ -283,7 +283,10 @@ st.title("🚀 Control Systems Visualiser")
 
 # --- SIDEBAR: Controls ---
 st.sidebar.header("System Controls")
-gain_k = st.sidebar.number_input("Gain (K)", value=1.0, step=0.1)
+# gain_k = st.sidebar.number_input("Gain (K)", value=1.0, step=0.1)
+gain_k = st.sidebar.number_input(
+    "Gain (K)", value=1.0, step=0.1, key="system_gain_k"
+)
 
 if "poles" not in st.session_state:
   st.session_state.poles = [-1.0 + 3j, -1.0 - 3j, -2.0 + 0j]
