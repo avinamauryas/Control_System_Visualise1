@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from scipy import signal
 import streamlit as st
 
@@ -17,6 +17,7 @@ gain_k = st.sidebar.number_input(
     "Gain (K)", value=1.0, step=0.1, key="system_gain_k"
 )
 st.sidebar.caption("💡 Recommended range: 0.1 to 50")
+
 if "poles" not in st.session_state:
   st.session_state.poles = [-1.0 + 0j, -2.0 + 0j]
 if "zeros" not in st.session_state:
@@ -24,9 +25,10 @@ if "zeros" not in st.session_state:
 
 st.sidebar.subheader("Add Pole/Zero")
 r_input = st.sidebar.number_input("Real (sigma)", value=-1.5)
-st.sidebar.caption("💡 Range: -10 to +2 (Keep negative for stability)")
+st.sidebar.caption("💡 Keep negative for stability")
 im_input = st.sidebar.number_input("Imag (omega)", value=0.0)
 st.sidebar.caption("💡 Range: -50 to +50")
+
 item_type = st.sidebar.radio("Type", ["Pole", "Zero"], horizontal=True)
 
 col_b1, col_b2 = st.sidebar.columns(2)
@@ -172,22 +174,39 @@ with tab2:
 
   col_b1, col_b2 = st.columns([2, 1])
   with col_b1:
-    fig_bode, (ax_bm, ax_bp) = plt.subplots(2, 1, figsize=(6, 4.5), sharex=True)
-    ax_bm.semilogx(w, mag, color="b", lw=1.5)
-    ax_bm.axhline(0, color="gray", linestyle="--", alpha=0.5)
-    ax_bm.set_ylabel("Mag (dB)", fontsize=9)
-    ax_bm.grid(True, which="both")
-    ax_bm.tick_params(labelsize=8)
+    fig_bode = make_subplots(
+        rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1
+    )
+    fig_bode.add_trace(
+        go.Scatter(
+            x=w,
+            y=mag,
+            mode="lines",
+            name="Mag (dB)",
+            line=dict(color="blue", width=2),
+        ),
+        row=1,
+        col=1,
+    )
+    fig_bode.add_trace(
+        go.Scatter(
+            x=w,
+            y=phase,
+            mode="lines",
+            name="Phase (deg)",
+            line=dict(color="red", width=2),
+        ),
+        row=2,
+        col=1,
+    )
 
-    ax_bp.semilogx(w, phase, color="r", lw=1.5)
-    ax_bp.axhline(-180, color="gray", linestyle="--", alpha=0.5)
-    ax_bp.set_xlabel("Freq (rad/s)", fontsize=9)
-    ax_bp.set_ylabel("Phase (deg)", fontsize=9)
-    ax_bp.grid(True, which="both")
-    ax_bp.tick_params(labelsize=8)
-
-    plt.tight_layout(pad=1.0)
-    st.pyplot(fig_bode)
+    fig_bode.update_xaxes(type="log", title_text="Frequency (rad/s)", row=2, col=1)
+    fig_bode.update_yaxes(title_text="Magnitude (dB)", row=1, col=1)
+    fig_bode.update_yaxes(title_text="Phase (deg)", row=2, col=1)
+    fig_bode.update_layout(
+        height=420, margin=dict(l=0, r=0, b=0, t=10), showlegend=False
+    )
+    st.plotly_chart(fig_bode, use_container_width=True)
 
   with col_b2:
     st.markdown("### Stability")
@@ -277,31 +296,17 @@ with tab4:
   y_ramp = np.clip(np.real(np.nan_to_num(y_ramp, nan=0.0)), -50, 50)
   y_sine = np.clip(np.real(np.nan_to_num(y_sine, nan=0.0)), -50, 50)
 
-  fig_2d, axs = plt.subplots(2, 2, figsize=(10, 4.5))
-
-  axs[0, 0].plot(t_2d, y_step, color="tab:blue", lw=1.5)
-  axs[0, 0].set_title("Step", fontsize=9)
-  axs[0, 0].grid(True)
-  axs[0, 0].tick_params(labelsize=8)
-
-  axs[0, 1].plot(t_2d, y_imp, color="tab:orange", lw=1.5)
-  axs[0, 1].set_title("Impulse", fontsize=9)
-  axs[0, 1].grid(True)
-  axs[0, 1].tick_params(labelsize=8)
-
-  axs[1, 0].plot(t_2d, y_ramp, color="tab:green", lw=1.5)
-  axs[1, 0].set_title("Ramp", fontsize=9)
-  axs[1, 0].grid(True)
-  axs[1, 0].tick_params(labelsize=8)
-
-  axs[1, 1].plot(t_2d, y_sine, color="tab:red", lw=1.5, label="Out")
-  axs[1, 1].plot(
-      t_2d, u_sine, color="gray", linestyle="--", alpha=0.7, label="In"
+  fig_2d = make_subplots(
+      rows=2,
+      cols=2,
+      subplot_titles=("Step Response", "Impulse Response", "Ramp Response", "Sine Response (w=1)"),
   )
-  axs[1, 1].set_title("Sine (w=1)", fontsize=9)
-  axs[1, 1].legend(fontsize=7)
-  axs[1, 1].grid(True)
-  axs[1, 1].tick_params(labelsize=8)
 
-  plt.tight_layout(pad=1.0)
-  st.pyplot(fig_2d)
+  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_step, mode="lines", line=dict(color="tab:blue")), row=1, col=1)
+  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_imp, mode="lines", line=dict(color="tab:orange")), row=1, col=2)
+  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_ramp, mode="lines", line=dict(color="tab:green")), row=2, col=1)
+  fig_2d.add_trace(go.Scatter(x=t_2d, y=y_sine, mode="lines", name="Out", line=dict(color="tab:red")), row=2, col=2)
+  fig_2d.add_trace(go.Scatter(x=t_2d, y=u_sine, mode="lines", name="In", line=dict(color="gray", dash="dash")), row=2, col=2)
+
+  fig_2d.update_layout(height=450, margin=dict(l=0, r=0, b=0, t=30), showlegend=False)
+  st.plotly_chart(fig_2d, use_container_width=True)
