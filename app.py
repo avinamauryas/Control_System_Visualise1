@@ -57,8 +57,16 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 z_coeffs = st.session_state.zeros
 p_coeffs = st.session_state.poles
-num_poly = np.poly(z_coeffs) * gain_k if len(z_coeffs) > 0 else np.array([gain_k])
-den_poly = np.poly(p_coeffs) if len(p_coeffs) > 0 else np.array([1.0])
+
+# Force coefficients to be clean real/complex polynomials without tiny imaginary noise
+num_poly = (
+    np.real_if_close(np.poly(z_coeffs) * gain_k)
+    if len(z_coeffs) > 0
+    else np.array([gain_k])
+)
+den_poly = (
+    np.real_if_close(np.poly(p_coeffs)) if len(p_coeffs) > 0 else np.array([1.0])
+)
 sys = signal.TransferFunction(num_poly, den_poly)
 
 # --- TAB 1: 3D LAPLACE ---
@@ -76,9 +84,9 @@ with tab1:
     den = den * (s - p)
 
   H_s = num / den
-  magnitude = np.log10(1.0 + np.abs(H_s))
+  magnitude = np.real(np.log10(1.0 + np.abs(H_s)))
   magnitude = np.nan_to_num(magnitude, nan=0.0, posinf=10.0, neginf=0.0)
-  phase = np.degrees(np.angle(H_s))
+  phase = np.real(np.degrees(np.angle(H_s)))
   phase = np.nan_to_num(phase, nan=0.0, posinf=180.0, neginf=-180.0)
 
   col_l1, col_l2 = st.columns(2)
@@ -128,8 +136,8 @@ with tab1:
 with tab2:
   w = np.logspace(-2, 3, 500)
   w, mag, phase = signal.bode(sys, w)
-  mag = np.nan_to_num(mag, nan=0.0, posinf=100.0, neginf=-100.0)
-  phase = np.nan_to_num(phase, nan=0.0, posinf=360.0, neginf=-360.0)
+  mag = np.real(np.nan_to_num(mag, nan=0.0, posinf=100.0, neginf=-100.0))
+  phase = np.real(np.nan_to_num(phase, nan=0.0, posinf=360.0, neginf=-360.0))
 
   zero_dB = np.where(np.diff(np.sign(mag)))[0]
   omega_gc = w[zero_dB[0]] if len(zero_dB) > 0 else np.nan
@@ -190,7 +198,8 @@ with tab3:
     for i, f in enumerate(freqs):
       u = np.sin(2 * np.pi * f * t)
       _, y_sine, _ = signal.lsim(sys, u, t)
-      Y_GRID[i, :] = np.clip(np.nan_to_num(y_sine, nan=0.0), -50, 50)
+      cleaned = np.real(np.nan_to_num(y_sine, nan=0.0))
+      Y_GRID[i, :] = np.clip(cleaned, -50, 50)
 
     fig_t3d = go.Figure(
         data=[
@@ -217,7 +226,8 @@ with tab3:
       _, y_step = signal.step(sys, T=t)
       y_out = np.cumsum(y_step) * (t[1] - t[0])
 
-    y_out = np.clip(np.nan_to_num(y_out, nan=0.0), -50, 50)
+    cleaned = np.real(np.nan_to_num(y_out, nan=0.0))
+    y_out = np.clip(cleaned, -50, 50)
     depth = np.linspace(0, 1, 8)
     Y_GRID = np.tile(y_out, (len(depth), 1))
 
@@ -249,10 +259,10 @@ with tab4:
   u_sine = np.sin(1.0 * t_2d)
   _, y_sine, _ = signal.lsim(sys, u_sine, t_2d)
 
-  y_step = np.clip(np.nan_to_num(y_step, nan=0.0), -50, 50)
-  y_imp = np.clip(np.nan_to_num(y_imp, nan=0.0), -50, 50)
-  y_ramp = np.clip(np.nan_to_num(y_ramp, nan=0.0), -50, 50)
-  y_sine = np.clip(np.nan_to_num(y_sine, nan=0.0), -50, 50)
+  y_step = np.clip(np.real(np.nan_to_num(y_step, nan=0.0)), -50, 50)
+  y_imp = np.clip(np.real(np.nan_to_num(y_imp, nan=0.0)), -50, 50)
+  y_ramp = np.clip(np.real(np.nan_to_num(y_ramp, nan=0.0)), -50, 50)
+  y_sine = np.clip(np.real(np.nan_to_num(y_sine, nan=0.0)), -50, 50)
 
   fig_2d, axs = plt.subplots(2, 2, figsize=(10, 4.5))
 
